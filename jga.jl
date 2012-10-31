@@ -119,6 +119,7 @@ function find_all_real_number(ch, dimension, chromlength, minbound, maxbound)
   return rs #, genes
 end
 
+#%SGA-Matlab: Julia port of Goldberg's Simple Genetic Algorithm
 function proportionate_selection(popsize, sumfitness, fitness)
   partsum = 0;
   j = 0;
