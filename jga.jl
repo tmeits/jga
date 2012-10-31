@@ -143,31 +143,6 @@ function selection(pop, fitness)
   return newpop
 end # selection
 
-# function selection(pop, fitvalue) 
-#   #%shift=min(fitvalue) 
-#   #%fitvalue=map(x->x+abs(shift)+0.1, fitvalue)
-#   totalfit=sum(fitvalue);     
-#   fitvalue=fitvalue/totalfit; 
-#   #%println("fitvalue=",fitvalue)
-#   fitvalue=cumsum(fitvalue);  #% fitvalue=[1 2 3 4],cumsum(fitvalue)=[1 3 6 10] 
-#   (popsize, chromlength)=size(pop); 
-#   newpop=copy(pop)
-#   ms=sort(rand(1, popsize), 2);       
-#   #%println("ms=", ms, "fitvalue=", fitvalue) 
-#   fitin=1;  
-#   newin=1; 
-#   while newin <= popsize 
-#       if ms[newin] < fitvalue[fitin]    
-#         println(ms[newin],":", fitvalue[fitin])
-#         newpop[newin,:]=pop[fitin,:];  
-#         newin=newin+1; 
-#       else 
-#         fitin=fitin+1; 
-#       end  
-#   end 
-#   return newpop
-# end # selection
-
 function crossover(pop, pc) 
     (popsize, chromlength)=size(pop)
     newpop=copy(pop)
