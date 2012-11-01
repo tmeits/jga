@@ -143,6 +143,24 @@ function selection(pop, fitness)
   return newpop
 end # selection
 
+function mixis_selection(pop, fitness) # Page 38
+  (popsize, chromlength)=size(pop)
+  sumfitness = sum(fitness)    
+  fitness = fitness / sumfitness 
+  fitness = cumsum(fitness)
+  #println(fitness)
+  new_pop = copy(pop) 
+  spin=rand(popsize)
+  for i=1:popsize
+    for j=1:popsize
+      if spin[i] < fitness[j]
+        new_pop[i,:]=pop[j,:]
+      end
+    end
+  end
+  return new_pop
+end
+
 function crossover(pop, pc) 
     (popsize, chromlength)=size(pop)
     newpop=copy(pop)
@@ -218,7 +236,8 @@ function ga(myf::Function, dimension::Int32, popsize::Int32,
       bf=tmp
       println("New best fitness=", bf, " on iteration: ", i)
     end
-    np=selection(p, f)
+    np=mixis_selection(p, f)
+    #np=selection(p, f)
     np=mutation(np, 0.01)
     np=crossover(np, 0.25)
     p=copy(np)
@@ -227,6 +246,7 @@ function ga(myf::Function, dimension::Int32, popsize::Int32,
 end # ga
 #% for i=1:10 println(ga(obj_fun2, 1, 50, 10,1. ,12., 150)) end
 #% ga(Rastrigin, 2, 80, [15 18], [-5.12 -5.12],[5.12 5.12],200)
+#% ga(obj_fun36, 2, 80, [18 15], [-3.0 4.1],[12.1 5.8],200)
 
 function obj_fun(x::Array{Float64,1})
   return x[1]*sin(10.0*pi*x[1])+1.0
@@ -235,7 +255,7 @@ end
 function obj_fun2(x::Array{Float64,1})
   return 10.*cos(3.*x[1])-4.*x[1]
 end # obj_fun
-function obj_fun36(x::Array{Float64,1})
+function obj_fun36(x)
   return 21.5+x[1]*sin(4.0*pi*x[1])+x[2]*sin(20.0*pi*x[2])
 end
 #% obj_fun36([1.052426 5.755330]) = 20.2526
