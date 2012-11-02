@@ -152,14 +152,57 @@ function mixis_selection(pop, fitness) # Page 38
   new_pop = copy(pop) 
   spin=rand(popsize)
   for i=1:popsize
-    for j=1:popsize
+    j = 1
+    while(j <= popsize)
       if spin[i] < fitness[j]
         new_pop[i,:]=pop[j,:]
+        j = popsize
       end
+      j=j+1
     end
   end
   return new_pop
 end
+
+function recombination_crossover(population, probability)
+  (popsize, chromlength) = size(population)
+  select_pop=copy(population); new_pop=copy(population)
+  r=rand(popsize); index=randb(popsize)
+  i = 1; j = 0
+  while(i <= popsize)
+    if probability < r[i]
+      j=j+1
+      select_pop[j,:]=population[j,:]
+      index[i]=j
+    end
+    i=i+1
+  end
+  #println("j=", j)
+  #% 
+  if rem(j,2) != 0
+    if rand() > 0.5 && j > 1
+      j=j-1
+    elseif j == popsize
+      j=j-1
+    else
+      j=j+1
+      select_pop[j,:] = randbit(chromlength)
+    end
+  end
+  #% Now we mate selected chromosomes randomly: 
+  #% say, the first two and the next two are coupled together
+  for i=1:j
+    pos=randi(chromlength-1)
+    id1=randi(j)
+    id2=randi(j)
+    #%println("pos=", pos)
+    #%println("ch=", pop[i,1:pos],":", pop[i+1,pos+1:chromlength])
+    new_pop[i,:]=[pop[i,1:pos] pop[i+1,pos+1:chromlength]]
+    new_pop[i+1,:]=[pop[i+1,1:pos] pop[i,pos+1:chromlength]] 
+  end
+  return new_pop
+end
+
 
 function crossover(pop, pc) 
     (popsize, chromlength)=size(pop)
