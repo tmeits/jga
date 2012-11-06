@@ -166,43 +166,56 @@ end
 
 function recombination_crossover(population, probability)
   (popsize, chromlength) = size(population)
-  select_pop=copy(population); new_pop=copy(population)
-  r=rand(popsize); index=randb(popsize)
-  i = 1; j = 0
-  while(i <= popsize)
-    if probability < r[i]
-      j=j+1
-      select_pop[j,:]=population[j,:]
-      index[i]=j
+  select_chrom=population[1,: ]
+  r=rand(popsize);  
+  for i=1: popsize
+    if r[i] < probability
+      if i != 1
+        select_chrom=[select_chrom, population[i,:]] 
+      end
     end
-    i=i+1
   end
-  #println("j=", j)
-  #% 
-  if rem(j,2) != 0
-    if rand() > 0.5 && j > 1
-      j=j-1
-    elseif j == popsize
-      j=j-1
+  s=size(select_chrom)[1]
+  if rem(s, 2) != 0
+    if rand() > 0.5 && s > 1
+      select_chrom= select_chrom[2:s,:] # выкинем одну хромосому
+    elseif s == popsize
+      select_chrom= select_chrom[2:s,:] # выкинем одну хромосому
     else
-      j=j+1
-      select_pop[j,:] = randbit(chromlength)
+      select_chrom=[select_chrom, randbit(1, chromlength)] # добавляем одну хромосому
     end
   end
+  s=size(select_chrom)[1]
+  new_pop=randbit(1, chromlength)
+  #println("s=",s)
   #% Now we mate selected chromosomes randomly: 
   #% say, the first two and the next two are coupled together
-  for i=1:j
+  for i=1:2:s
     pos=randi(chromlength-1)
-    id1=randi(j)
-    id2=randi(j)
-    #%println("pos=", pos)
-    #%println("ch=", pop[i,1:pos],":", pop[i+1,pos+1:chromlength])
-    new_pop[i,:]=[pop[i,1:pos] pop[i+1,pos+1:chromlength]]
-    new_pop[i+1,:]=[pop[i+1,1:pos] pop[i,pos+1:chromlength]] 
+    id1=randi(s); id2=randi(s)
+    #println("pos=", pos)
+    if i==1
+      new_pop=[population[id1,1:pos] population[id2,pos+1:chromlength]]
+      new_pop=[new_pop; population[id2,1:pos] population[id1,pos+1:chromlength]]
+    else
+      new_pop=[new_pop; population[id1,1:pos] population[id2,pos+1:chromlength]]
+      new_pop=[new_pop; population[id2,1:pos] population[id1,pos+1:chromlength]]
+    end 
   end
-  return new_pop
+  #println(new_pop)
+  i=0
+  while ((size(new_pop)[1]) < popsize && i < popsize)
+    i=i+1
+    if r[i] > probability
+      new_pop=[new_pop, population[i,:]] 
+    end
+    if size(new_pop)[1] < popsize
+      new_pop=[new_pop, randbit(1, chromlength)] 
+    end
+    #println(i, size(new_pop)[1])
+  end
+  return new_pop#, select_chrom 
 end
-
 
 function crossover(pop, pc) 
     (popsize, chromlength)=size(pop)
@@ -282,14 +295,15 @@ function ga(myf::Function, dimension::Int32, popsize::Int32,
     np=mixis_selection(p, f)
     #np=selection(p, f)
     np=mutation(np, 0.01)
-    np=crossover(np, 0.25)
+    np=recombination_crossover(np, 0.25)
+    #np=crossover(np, 0.25)
     p=copy(np)
   end
   return bf, br
 end # ga
 #% for i=1:10 println(ga(obj_fun2, 1, 50, 10,1. ,12., 150)) end
 #% ga(Rastrigin, 2, 80, [15 18], [-5.12 -5.12],[5.12 5.12],200)
-#% ga(obj_fun36, 2, 80, [18 15], [-3.0 4.1],[12.1 5.8],200)
+#% ga(obj_fun36, 2, 80, [18 15], [-3.0 4.1],[12.1 5.8],200) #38.827553
 
 function obj_fun(x::Array{Float64,1})
   return x[1]*sin(10.0*pi*x[1])+1.0
