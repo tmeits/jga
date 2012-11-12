@@ -263,6 +263,29 @@ function mutation(pop, pm)
   return newpop
 end # mutation
 
+function performed_mutation(population, pm)
+  (popsize,chromlength)=size(population)
+  new_pop=init_pop(popsize, chromlength)
+  r=rand(popsize*chromlength)
+  for i=1:popsize*chromlength-1
+    #% Translates the bit position into chromosomes number and the bit number within the chromosome
+    ch=int(floor(i/chromlength))+1
+    bn=i-((ch-1)*chromlength)+1
+    #println("ch=", ch, "  bn=", bn)
+    if r[i] < pm 
+      new_pop[ch, :] = population[ch, :]
+      if  new_pop[ch,bn] == 0 
+        new_pop[ch,bn] = 1
+      else 
+        new_pop[ch,bn] = 0
+      end 
+    else 
+      new_pop[ch,:]=population[ch,:] 
+    end 
+  end
+  return new_pop
+end
+
 function best(pop, fitvalue)  
   (popsize,chromlength)=size(pop); 
   bestindividual=pop[1,:]; 
@@ -294,9 +317,10 @@ function ga(myf::Function, dimension::Int32, popsize::Int32,
     end
     np=mixis_selection(p, f)
     #np=selection(p, f)
-    np=mutation(np, 0.01)
+    #np=mutation(np, 0.01)
     np=recombination_crossover(np, 0.25)
     #np=crossover(np, 0.25)
+    np=performed_mutation(np,0.01)
     p=copy(np)
   end
   return bf, br
@@ -347,3 +371,4 @@ end
 #####################################################################
 #http://www.ingber.com/ASA-README.html
 #http://cs.adelaide.edu.au/~zbyszek/evol-systems.html
+#%http://www.geatbx.com/docu/fcnindex-01.html#P86_3059
