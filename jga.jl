@@ -329,6 +329,39 @@ end # ga
 #% ga(Rastrigin, 2, 80, [15 18], [-5.12 -5.12],[5.12 5.12],200)
 #% ga(obj_fun36, 2, 80, [18 15], [-3.0 4.1],[12.1 5.8],200) #38.827553
 
+#% http://www.geatbx.com/docu/fcnindex-01.html#P86_3059
+#% http://www.geatbx.com/docu/objfun1.html
+
+#% This function implements the DE JONG function 1.
+#%
+#% Syntax:  ObjVal = objfun1(xs)
+#%
+#% Input parameters:
+#%    xs - Vector containing the Float64 numbers.
+
+function objfun1(xs);
+  l=length(xs); s=0.;
+  for i=1:l
+    s=s+xs[i]*xs[i]
+  end
+  return s*-1.
+end #% End of function
+# ga(objfun1, 20, 80, map(x->21,randi(10,1,20)),  map(x->-5.12,randi(10,1,20)),  map(x->5.12,randi(10,1,20))], 200) 
+# global minimum:   f(x)=0, x(i)=0, i=1:n.
+
+function randf2(a::Float64, b::Float64, dim::Int32)
+  k=1
+  for i=1: dim
+    k=k*10
+    a=a*10
+    b=b*10
+  end
+  x=int(trunc(a))
+  y=int(trunc(b))
+  #%println(k,a,b)
+  return randival(x, y)/k
+end
+
 function obj_fun(x::Array{Float64,1})
   return x[1]*sin(10.0*pi*x[1])+1.0
 end
