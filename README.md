@@ -8,7 +8,7 @@ Downloads http://julialang.org
 
 load("jga.jl")
 
-Editor Sublime Text 2 Mode MATLAB
+Editor GVim plus https://github.com/tmeits/julia-vim.git
 
 References: Michalewicz Zbigniew "Genetic Algorithms + Data Structures = Evolution Programs"
 
